@@ -1,36 +1,59 @@
 "use client"
 
-import { useState } from "react"
-
-import { Form } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { initialSignupFormData, userRegestrationFormControls } from "../utils"
+import { initialSignUpFormData, userRegistrationFormControls } from "../utils"
 import CommonFormElement from "@/components/form-element/page"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { registerUserAction } from "@/actions"
+import { useRouter } from "next/navigation"
 
-export default function SignUp() {
-  const [signupFormData, setSignupFormdata] = useState(initialSignupFormData)
-  console.log(signupFormData)
+function SignUp() {
+  const [signUpFormData, setSignUpFormData] = useState(initialSignUpFormData)
+  const router = useRouter()
+
+  function handleSignUpBtnValid() {
+    return Object.keys(signUpFormData).every(
+      (key) => signUpFormData[key].trim() !== ""
+    )
+  }
+
+  async function handleSignUp() {
+    const result = await registerUserAction(signUpFormData)
+    console.log(result)
+
+    if (result?.data) router.push("/sign-in")
+  }
+
   return (
     <div>
-      <h1>Regestration</h1>
-      <Form>
-        {userRegestrationFormControls.map((controlItem) => (
+      <h1>Registration</h1>
+      <form action={handleSignUp}>
+        {userRegistrationFormControls.map((controlItem) => (
           <div key={controlItem.name}>
             <Label>{controlItem.label}</Label>
             <CommonFormElement
-              value={signupFormData[controlItem.name]}
+              value={signUpFormData[controlItem.name]}
               currentItem={controlItem}
               onChange={(event) =>
-                setSignupFormdata({
-                  ...signupFormData,
+                setSignUpFormData({
+                  ...signUpFormData,
                   [event.target.name]: event.target.value,
                 })
               }
             />
           </div>
         ))}
-      </Form>
+        <Button
+          disabled={!handleSignUpBtnValid()}
+          className="disabled:opacity-65"
+          type="submit"
+        >
+          Sign Up
+        </Button>
+      </form>
     </div>
   )
 }
+
+export default SignUp
