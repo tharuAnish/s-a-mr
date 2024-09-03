@@ -137,3 +137,8 @@ export async function fetchAuthUserAction() {
     }
   }
 }
+
+export async function logoutAction() {
+  const getCookies = cookies()
+  getCookies.set("token", "")
+}
